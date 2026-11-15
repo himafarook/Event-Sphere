@@ -1,0 +1,19 @@
+{% extends "base.html" %}{% block content %}<h3>Gate scanner</h3>
+<div class="mb-2"><label class="form-label">Event</label><select id="event" class="form-select">{% for e in events %}<option value="{{ e.id }}">{{ e.title }} - {{ e.start|dt }}</option>{% endfor %}</select></div>
+<button id="startBtn" class="btn btn-primary mb-2">Start camera</button> <button id="stopBtn" class="btn btn-outline-secondary mb-2" style="display:none">Stop</button>
+<div id="reader" style="max-width:420px"></div>
+<div class="input-group my-3" style="max-width:520px"><input id="manual" class="form-control" placeholder="Manual ticket code"><button id="manualBtn" class="btn btn-dark">Check</button></div>
+<div id="out"></div>{% endblock %}
+{% block scripts %}<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script><script>
+const csrf="{{ csrf }}";let last="",lastT=0,scanner=null;
+async function submit(code){const ev=document.getElementById('event').value;if(!ev)return;
+ const r=await fetch('/api/scan',{method:'POST',headers:{'Content-Type':'application/json','X-CSRF-Token':csrf},body:JSON.stringify({code:code.trim(),event_id:parseInt(ev)})});
+ const j=await r.json();const o=document.getElementById('out');
+ o.innerHTML=j.ok?`<div class="scan-result scan-ok">ADMIT<br><small>${j.holder} - ${j.category}</small></div>`:`<div class="scan-result scan-bad">REJECTED: ${(j.result||'error').replace('_',' ').toUpperCase()}<br><small>${j.reason||j.detail||''}</small></div>`;
+ if(navigator.vibrate)navigator.vibrate(j.ok?80:[200,80,200]);}
+document.getElementById('manualBtn').onclick=()=>{const v=document.getElementById('manual').value;if(v)submit(v)};
+document.getElementById('startBtn').onclick=async()=>{scanner=new Html5Qrcode("reader");
+ try{await scanner.start({facingMode:"environment"},{fps:10,qrbox:220},t=>{const n=Date.now();if(t===last&&n-lastT<3000)return;last=t;lastT=n;submit(t)});
+ startBtn.style.display='none';stopBtn.style.display='inline-block'}catch(e){document.getElementById('out').innerHTML='<div class="alert alert-warning">Camera unavailable ('+e+'). Use manual entry.</div>'}};
+document.getElementById('stopBtn').onclick=async()=>{await scanner.stop();startBtn.style.display='inline-block';stopBtn.style.display='none'};
+</script>{% endblock %}

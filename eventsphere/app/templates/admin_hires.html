@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block content %}<h3>Venue hire requests</h3><div class="table-responsive"><table class="table table-sm align-middle"><tr><th>#</th><th>User</th><th>Venue</th><th>When</th><th>Guests</th><th>Purpose</th><th>Price</th><th>Status</th><th></th></tr>
+{% for h in hires %}<tr><td>{{ h.id }}</td><td>{{ h.user.name }}</td><td>{{ h.venue.name }}</td><td>{{ h.start|dt }} &rarr; {{ h.end.strftime('%H:%M') }}</td><td>{{ h.guests }}</td><td>{{ h.purpose }}</td><td>{{ h.price|money }}</td>
+<td><span class="badge bg-{{ {'confirmed':'success','pending':'warning text-dark','rejected':'danger'}[h.status] }}">{{ h.status }}</span></td>
+<td>{% if h.status=='pending' %}<form class="d-flex gap-1" method="post" action="/admin/hires/{{ h.id }}/decide"><input type="hidden" name="csrf_token" value="{{ csrf }}"><input class="form-control form-control-sm" name="note" placeholder="Note">
+<button name="approve" value="1" class="btn btn-sm btn-success">Approve</button><button name="approve" value="0" class="btn btn-sm btn-danger">Reject</button></form>{% endif %}</td></tr>{% endfor %}</table></div>{% endblock %}

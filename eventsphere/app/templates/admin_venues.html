@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block content %}<h3>Venues</h3>
+<form class="row g-2 mb-4" method="post" action="/admin/venues/save" enctype="multipart/form-data"><input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="id" value="{{ v.id if v else '' }}">
+<div class="col-md-4"><label class="form-label">Name</label><input class="form-control" name="name" required value="{{ v.name if v else '' }}"></div>
+<div class="col-md-4"><label class="form-label">Location</label><input class="form-control" name="location" value="{{ v.location if v else '' }}"></div>
+<div class="col-6 col-md-2"><label class="form-label">Capacity</label><input class="form-control" type="number" min="1" name="capacity" required value="{{ v.capacity if v else '' }}"></div>
+<div class="col-6 col-md-2"><label class="form-label">Hire LKR/hour</label><input class="form-control" type="number" min="0" step="0.01" name="hourly_rate" value="{{ v.hourly_rate if v else 0 }}"></div>
+<div class="col-12"><label class="form-label">Description</label><textarea class="form-control" name="description" rows="2">{{ v.description if v else '' }}</textarea></div>
+<div class="col-md-5"><label class="form-label">Image URL</label><input class="form-control" name="image_url" value="{{ v.image_url if v else '' }}"></div>
+<div class="col-md-4"><label class="form-label">...or upload image</label><input class="form-control" type="file" name="image" accept="image/*"></div>
+<div class="col-md-3 d-flex align-items-end"><div class="form-check"><input class="form-check-input" type="checkbox" name="open_for_hire" value="1" id="oh" {{ 'checked' if v and v.open_for_hire }}><label class="form-check-label" for="oh">Open for private hire</label></div></div>
+<div class="col-12"><button class="btn btn-primary">{{ 'Update' if v else 'Create' }} venue</button>{% if v %} <a href="/admin/venues" class="btn btn-link">Cancel</a>{% endif %}</div></form>
+<div class="table-responsive"><table class="table table-sm"><tr><th>Name</th><th>Location</th><th>Capacity</th><th>Rate</th><th>Hire</th><th></th></tr>
+{% for x in venues %}<tr><td>{{ x.name }}</td><td>{{ x.location }}</td><td>{{ x.capacity }}</td><td>{{ x.hourly_rate|money }}</td><td>{{ 'Yes' if x.open_for_hire else 'No' }}</td><td><a href="/admin/venues?edit={{ x.id }}">Edit</a></td></tr>{% endfor %}</table></div>{% endblock %}

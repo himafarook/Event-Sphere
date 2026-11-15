@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% block title %}{{ ev.title }}{% endblock %}{% block content %}
+<span class="badge bg-secondary">{{ ev.category }}</span>{% if ev.status!='published' %} <span class="badge bg-warning text-dark">{{ ev.status }}</span>{% endif %}
+<h2>{{ ev.title }}</h2><p class="text-muted">{{ ev.start|dt }} - {{ ev.end|dt }} &middot; {{ ev.venue.name }}, {{ ev.venue.location }}</p>
+<p>{{ ev.description }}</p>
+{% if ev.status=='published' and ev.start > now %}
+{% if not user %}<div class="alert alert-info"><a href="/login?next=/events/{{ ev.id }}">Sign in</a> to book tickets.</div>{% endif %}
+<form method="post" action="/events/{{ ev.id }}/book"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<div class="table-responsive"><table class="table align-middle"><thead><tr><th>Ticket</th><th>Price</th><th>Left</th><th style="width:110px">Qty</th></tr></thead><tbody>
+{% for c in ev.categories %}<tr><td>{{ c.name }}</td><td>LKR {{ c.price|money }}</td>
+<td>{% if c.available>0 %}{{ c.available }}{% else %}<span class="badge bg-danger">Sold out</span>{% endif %}</td>
+<td><input type="hidden" name="category_id" value="{{ c.id }}"><input class="form-control" type="number" name="qty" min="0" max="{{ [c.available, max_tickets]|min if c.available>0 else 0 }}" value="0" {{ 'disabled' if c.available<=0 }}>
+{% if c.available<=0 %}<input type="hidden" name="qty" value="0">{% endif %}</td></tr>{% endfor %}</tbody></table></div>
+{% if user %}<div class="mb-2"><label class="form-label small">Payment (simulated - no real card details are collected)</label>
+<select class="form-select w-auto" name="method"><option value="simulated">Simulated card payment</option><option value="simulated-wallet">Simulated wallet</option></select></div>
+<button class="btn btn-success">Pay &amp; book (simulated)</button> <span class="small text-muted">Max {{ max_tickets }} tickets per attendee.</span>{% endif %}</form>
+{% if user %}{% for c in ev.categories if c.available<=0 %}
+<form class="mt-3 d-flex gap-2 align-items-center" method="post" action="/events/{{ ev.id }}/waitlist"><input type="hidden" name="csrf_token" value="{{ csrf }}">
+<input type="hidden" name="category_id" value="{{ c.id }}"><span>{{ c.name }} is sold out:</span><input class="form-control w-auto" style="width:80px!important" type="number" name="qty" min="1" max="{{ max_tickets }}" value="1">
+<button class="btn btn-outline-primary btn-sm">Join waitlist</button></form>{% endfor %}
+{% if mine %}<p class="mt-2 small">You are on the waitlist - <a href="/my/waitlist">view</a>.</p>{% endif %}{% endif %}
+{% else %}<div class="alert alert-secondary">Booking is not available for this event.</div>{% endif %}{% endblock %}

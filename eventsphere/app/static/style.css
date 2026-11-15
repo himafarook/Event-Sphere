@@ -1,0 +1,8 @@
+body{background:#f6f7fb}
+.card-event{transition:transform .1s}.card-event:hover{transform:translateY(-2px)}
+.ph{height:120px;background:linear-gradient(135deg,#4f46e5,#06b6d4)}
+.ticket-qr{width:150px;height:150px}
+.scan-result{font-size:1.4rem;padding:1rem;border-radius:.75rem;text-align:center;margin-top:1rem}
+.scan-ok{background:#198754;color:#fff}.scan-bad{background:#dc3545;color:#fff}
+pre.json{white-space:pre-wrap;word-break:break-all;margin:0;font-size:.75rem}
+.table-responsive{overflow-x:auto}
