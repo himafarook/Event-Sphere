@@ -41,11 +41,6 @@ and a 2-seat "Sold-out Demo Talk" for the waitlist demo (set `HOLD_MINUTES=1` to
 ```bash
 pytest -q        # 24 tests: overbooking, double check-in, every agent, roles, CSRF, HTTP inbox
 ```
-
-## Deploy on Render (HTTPS)
-1. Push to GitHub. 2. Render -> New -> Blueprint -> pick the repo (uses `render.yaml`: web service + free PostgreSQL).
-3. Open the live URL once before the viva (free tier sleeps).
-
 ## Layout
 `app/agents/` the five agents + bus - `app/main.py` routes - `app/models.py` tables - `app/templates/` UI - `tests/` pytest - `docs/REPORT.md` report.
 
