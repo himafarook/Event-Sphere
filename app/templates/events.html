@@ -1,0 +1,17 @@
+{% extends "base.html" %}{% block content %}
+<form class="row g-2 mb-3" method="get">
+<div class="col-12 col-md-4"><input class="form-control" name="q" placeholder="Search events" value="{{ f.q }}"></div>
+<div class="col-6 col-md-2"><select class="form-select" name="category"><option value="">All categories</option>{% for c in categories %}<option {{ 'selected' if f.category==c }}>{{ c }}</option>{% endfor %}</select></div>
+<div class="col-6 col-md-2"><select class="form-select" name="venue_id"><option value="">All venues</option>{% for v in venues %}<option value="{{ v.id }}" {{ 'selected' if f.venue_id==v.id|string }}>{{ v.name }}</option>{% endfor %}</select></div>
+<div class="col-4 col-md-1"><input class="form-control" name="price_max" placeholder="Max LKR" value="{{ f.price_max }}"></div>
+<div class="col-4 col-md-1"><input class="form-control" type="date" name="date_from" value="{{ f.date_from }}" title="From"></div>
+<div class="col-4 col-md-1"><input class="form-control" type="date" name="date_to" value="{{ f.date_to }}" title="To"></div>
+<div class="col-12 col-md-1"><button class="btn btn-primary w-100">Go</button></div></form>
+<div class="row g-3">{% for e in events %}{% set left = e.categories|sum(attribute='available') %}
+<div class="col-12 col-md-6 col-lg-4"><a class="text-decoration-none text-dark" href="/events/{{ e.id }}"><div class="card card-event h-100">
+{% if e.venue.image_url %}<img src="{{ e.venue.image_url }}" class="card-img-top" style="height:120px;object-fit:cover" alt="">{% else %}<div class="ph card-img-top"></div>{% endif %}
+<div class="card-body"><span class="badge bg-secondary">{{ e.category }}</span>
+<h5 class="mt-1">{{ e.title }}</h5><div class="small text-muted">{{ e.start|dt }}<br>{{ e.venue.name }}</div>
+<div class="mt-2">{% if e.categories %}from <b>LKR {{ e.categories|map(attribute='price')|min|money }}</b>{% endif %}
+{% if left <= 0 %}<span class="badge bg-danger">Sold out</span>{% else %}<span class="badge bg-success">{{ left }} left</span>{% endif %}</div></div></div></a></div>
+{% else %}<p class="text-muted">No events match your search.</p>{% endfor %}</div>{% endblock %}
