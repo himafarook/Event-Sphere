@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block content %}<div class="d-flex justify-content-between"><h3>Events</h3><a class="btn btn-primary" href="/admin/events/new">New event</a></div>
+<div class="table-responsive"><table class="table table-sm align-middle"><tr><th>Title</th><th>When</th><th>Venue</th><th>Status</th><th></th></tr>
+{% for e in events %}<tr><td><a href="/events/{{ e.id }}">{{ e.title }}</a></td><td>{{ e.start|dt }}</td><td>{{ e.venue.name }}</td><td><span class="badge bg-{{ {'draft':'warning text-dark','published':'success','cancelled':'secondary'}[e.status] }}">{{ e.status }}</span></td>
+<td class="text-nowrap">{% if e.status!='cancelled' %}<a class="btn btn-sm btn-outline-primary" href="/admin/events/{{ e.id }}/edit">Edit</a>{% endif %}
+{% if e.status=='published' %}<form class="d-inline" method="post" action="/admin/events/{{ e.id }}/cancel" onsubmit="return confirm('Cancel this event and refund everyone in full?')"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="btn btn-sm btn-outline-danger">Cancel event</button></form>{% endif %}</td></tr>{% endfor %}</table></div>{% endblock %}
