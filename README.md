@@ -49,7 +49,8 @@ pytest -q        # 24 tests: overbooking, double check-in, every agent, roles, C
 ## Layout
 `app/agents/` the five agents + bus - `app/main.py` routes - `app/models.py` tables - `app/templates/` UI - `tests/` pytest - `docs/REPORT.md` report.
 
-**## How the agent works**
+**How the agent works**
+
 In EventSphere the web pages make no decisions. When you click “book”, the page sends a message to an agent and shows its reply. The five agents never call each other’s code. They only pass JSON messages through a message bus, and every message is logged with a conversation id so you can follow one action across agents.
 
 Each message has a sender, a receiver, a type (REQUEST, AGREE, REFUSE, PROPOSE, INFORM or FAILURE), content and the conversation id. A refusal always gives a reason, and a PROPOSE always includes real alternatives. Each agent also keeps its own counters and flags in the database, so they survive a restart.
